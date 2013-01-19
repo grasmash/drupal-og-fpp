@@ -1,0 +1,6 @@
+name = Organic groups Fieldable Panels Panes
+description = "Allow Fieldable Panels Panes to be made Group-aware."
+package = "Organic groups"
+dependencies[] = og
+dependencies[] = fieldable_panels_panes
+core = 7.x
