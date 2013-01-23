@@ -2,8 +2,8 @@
 
 /**
  * @file
- *   Adds restrictions to fieldable_panels_pane content type plugins based on
- *   the organic groups to which the corresponding pane entity belongs.
+ * Adds restrictions to fieldable_panels_pane content type plugins based on
+ * the organic groups to which the corresponding pane entity belongs.
  */
 
 /**
@@ -12,9 +12,9 @@
  * This hook is useful for overriding the final values for a plugin after it
  * has been processed.
  *
- * @param $plugin
+ * @param array $plugin
  *   An associative array defining a plugin.
- * @param $info
+ * @param array $info
  *   An associative array of plugin type info.
  */
 function og_fpp_ctools_plugin_post_alter(&$plugin, &$info) {
@@ -42,8 +42,7 @@ function og_fpp_form_fieldable_panels_panes_fieldable_panels_pane_content_type_e
 }
 
 /**
- * Modifies the result of ctools_context_create_entity() to add the
- * group_membership restriction.
+ * Modifies the result of ctools_context_create_entity() to add the group_membership restriction.
  *
  * og_fpp_ctools_plugin_post_alter() replaces ctools_context_create_entity()
  * with this function as the way to generate an context variable.
@@ -65,10 +64,12 @@ function og_fpp_ctools_context_create_entity($empty, $data = NULL, $conf = FALSE
 
 /**
  * Create an array of of the groups to which the provide entity belongs.
+ *
  * @param $entity_type
  *   The entity type of the provided entity.
  * @param $entity
  *   An entity object.
+ *
  * @return
  *  An array with this pattern:
  * $group_membership_restrictions = array (
@@ -146,8 +147,7 @@ function og_fpp_fieldable_panels_pane_content_type_content_types() {
 }
 
 /**
- * Adds a required context to a subtype based on the group to which the pane
- * belongs.
+ * Adds a required context to a subtype based on the group to which the pane belongs.
  */
 function _og_fpp_add_required_context($subtype, $entity) {
 
