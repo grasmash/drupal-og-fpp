@@ -65,17 +65,17 @@ function og_fpp_ctools_context_create_entity($empty, $data = NULL, $conf = FALSE
 /**
  * Create an array of of the groups to which the provide entity belongs.
  *
- * @param $entity_type
+ * @param string $entity_type
  *   The entity type of the provided entity.
- * @param $entity
+ * @param object $entity
  *   An entity object.
  *
- * @return
- *  An array with this pattern:
- * $group_membership_restrictions = array (
- *   0 => 'node-4',
- *   1 => 'some_other_group_entity_type-123'
- * );
+ * @return array
+ *   An array with this pattern:
+ *   $group_membership_restrictions = array (
+ *     0 => 'node-4',
+ *     1 => 'some_other_group_entity_type-123'
+ *   );
  */
 function og_fpp_build_group_membership_restrictions($entity_type, $entity) {
 
