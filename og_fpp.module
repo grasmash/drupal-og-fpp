@@ -6,7 +6,7 @@
  *   the organic groups to which the corresponding pane entity belongs.
  */
 
-/*
+/**
  * Alter a plugin after it has been processed.
  *
  * This hook is useful for overriding the final values for a plugin after it
@@ -100,8 +100,8 @@ function og_fpp_build_group_membership_restrictions($entity_type, $entity) {
   $group_membership_restrictions = array();
 
   if (!empty($groups)) {
-    foreach($groups as $entity_type => $group_memberships) {
-      foreach($group_memberships as $entity_id) {
+    foreach ($groups as $entity_type => $group_memberships) {
+      foreach ($group_memberships as $entity_id) {
         $group_membership_restrictions[] = $entity_type . '-' . $entity_id;
       }
     }
@@ -114,7 +114,7 @@ function og_fpp_build_group_membership_restrictions($entity_type, $entity) {
  * Slightly modified version of fieldable_panels_panes_fieldable_panels_pane_content_type_content_types()
  */
 function og_fpp_fieldable_panels_pane_content_type_content_types() {
-   $types = _fieldable_panels_panes_default_content_type();
+  $types = _fieldable_panels_panes_default_content_type();
 
   $ids = db_query('SELECT fpid FROM {fieldable_panels_panes} WHERE reusable = 1')->fetchCol();
   if ($ids) {
