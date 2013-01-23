@@ -33,19 +33,20 @@ function og_fpp_ctools_plugin_post_alter(&$plugin, &$info) {
  * Implements hook_form_FORM_ID_alter().
  */
 function og_fpp_form_fieldable_panels_panes_fieldable_panels_pane_content_type_edit_form_alter(&$form, &$form_state, $form_id) {
-  // Hide the context array if it's there because the plugin doesn't really need it.
-  // It is added by og_fpp_fieldable_panels_pane_content_type_content_types() for
-  // the restrictions array.
+  // Hide the context array if it's there because the plugin doesn't really need
+  // it. It is added by og_fpp_fieldable_panels_pane_content_type_content_types()
+  // for the restrictions array.
   if (!empty($form['context'])) {
     $form['context']['#access'] = FALSE;
   }
 }
 
 /**
- * Modifies the result of ctools_context_create_entity() to add the group_membership restriction.
+ * Modifies the result of ctools_context_create_entity() to add the
+ * group_membership restriction.
  *
- * og_fpp_ctools_plugin_post_alter() replaces ctools_context_create_entity() with
- * this function as the way to generate an context variable.
+ * og_fpp_ctools_plugin_post_alter() replaces ctools_context_create_entity()
+ * with this function as the way to generate an context variable.
  */
 function og_fpp_ctools_context_create_entity($empty, $data = NULL, $conf = FALSE, $plugin) {
 
@@ -87,8 +88,8 @@ function og_fpp_build_group_membership_restrictions($entity_type, $entity) {
   $groups = array();
   // Check if the entity is itself a group.
   // This is also a difference from _group_context_handler_entity() in that
-  // it passes an $entity to og_is_group instead of just the id because an infinite
-  // loop results when used with workbench_workflows.
+  // it passes an $entity to og_is_group instead of just the id because an
+  // infinite loop results when used with workbench_workflows.
   // @todo, should _group_context_handler_entity() be patched to do the same?
   if ($group = og_is_group($entity_type, $entity)) {
     $groups[$entity_type][] = $id;
@@ -114,14 +115,15 @@ function og_fpp_build_group_membership_restrictions($entity_type, $entity) {
 /**
  * Generates content type plugins for fieldable panel panes.
  *
- * og_fpp_ctools_plugin_post_alter() replaces fieldable_panels_panes_fieldable_panels_pane_content_type_content_types()
+ * og_fpp_ctools_plugin_post_alter() replaces
+ * fieldable_panels_panes_fieldable_panels_pane_content_type_content_types()
  * with this function as the way to generate a the content type plugins for
  * fieldable panel panes.
  *
  * The content of this function are a slightly modified version of
  * fieldable_panels_panes_fieldable_panels_pane_content_type_content_types().
- * The modification adds a required context of an entity with a group membership.
- *
+ * The modification adds a required context of an entity with a group
+ * membership.
  */
 function og_fpp_fieldable_panels_pane_content_type_content_types() {
   $types = _fieldable_panels_panes_default_content_type();
@@ -144,7 +146,8 @@ function og_fpp_fieldable_panels_pane_content_type_content_types() {
 }
 
 /**
- * Adds a required context to a subtype based on the group to which the pane belongs.
+ * Adds a required context to a subtype based on the group to which the pane
+ * belongs.
  */
 function _og_fpp_add_required_context($subtype, $entity) {
 
