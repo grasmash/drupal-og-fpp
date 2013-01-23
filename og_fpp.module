@@ -42,14 +42,17 @@ function og_fpp_form_fieldable_panels_panes_fieldable_panels_pane_content_type_e
 }
 
 /**
- * Modifies the result of ctools_context_create_entity()
+ * Modifies the result of ctools_context_create_entity() to add the group_membership restriction.
+ *
+ * og_fpp_ctools_plugin_post_alter() replaces ctools_context_create_entity() with
+ * this function as the way to generate an context variable.
  */
 function og_fpp_ctools_context_create_entity($empty, $data = NULL, $conf = FALSE, $plugin) {
 
   // Call the normal function. Then modify the result.
   $context = ctools_context_create_entity($empty, $data, $conf, $plugin);
 
-  // @todo this is entirely node-specific. Should it be generalized?
+  // @todo this is entirely node-specific. Could it be generalized?
   if (!empty($context->data->nid)) {
     if ($group_membership_restrictions = og_fpp_build_group_membership_restrictions('node', $context->data)) {
       $context->restrictions['group_membership'] = $group_membership_restrictions;
@@ -94,8 +97,6 @@ function og_fpp_build_group_membership_restrictions($entity_type, $entity) {
     $groups = $gids;
   }
 
-
-
   // Create an empty array.
   $group_membership_restrictions = array();
 
@@ -111,7 +112,16 @@ function og_fpp_build_group_membership_restrictions($entity_type, $entity) {
 }
 
 /**
- * Slightly modified version of fieldable_panels_panes_fieldable_panels_pane_content_type_content_types()
+ * Generates content type plugins for fieldable panel panes.
+ *
+ * og_fpp_ctools_plugin_post_alter() replaces fieldable_panels_panes_fieldable_panels_pane_content_type_content_types()
+ * with this function as the way to generate a the content type plugins for
+ * fieldable panel panes.
+ *
+ * The content of this function are a slightly modified version of
+ * fieldable_panels_panes_fieldable_panels_pane_content_type_content_types().
+ * The modification adds a required context of an entity with a group membership.
+ *
  */
 function og_fpp_fieldable_panels_pane_content_type_content_types() {
   $types = _fieldable_panels_panes_default_content_type();
@@ -145,6 +155,7 @@ function _og_fpp_add_required_context($subtype, $entity) {
       'group_membership' => $group_membership_restrictions,
     );
     // Add a new required context if restrictions exit.
+    // @todo, it might be possible to abstract this beyond nodes.
     $subtype['required context'] = new ctools_context_required('node', 'node', $restrictions);
   }
 
