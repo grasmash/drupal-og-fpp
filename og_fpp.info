@@ -4,3 +4,5 @@ package = "Organic groups"
 dependencies[] = og
 dependencies[] = fieldable_panels_panes
 core = 7.x
+
+files[] = includes/OgPanelsPaneController.class.php

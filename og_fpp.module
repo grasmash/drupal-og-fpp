@@ -7,6 +7,77 @@
  */
 
 /**
+ * Implements hook_entity_info_alter().
+ */
+function og_fpp_entity_info_alter(&$entity_info) {
+  $entity_info['fieldable_panels_pane']['controller class']= 'OgPanelsPaneController';
+}
+
+/**
+ * Implements hook_og_permission().
+ */
+function og_fpp_og_permission() {
+  $perms = array();
+  $fpp_info = entity_get_info('fieldable_panels_pane');
+  $bundles = array_keys($fpp_info['bundles']);
+
+  // For each type of fpp, define a set of group-specific permissions.
+  foreach ($bundles as $bundle) {
+    $perms = array_merge($perms, og_fpp_list_permissions($bundle));
+  }
+
+  return $perms;
+}
+
+
+/**
+ * Helper function to generate standard node permission list for a given type.
+ *
+ * @param string $type
+ *   The machine-readable name of the node type.
+ *
+ * @return array
+ *   An array of permission names and descriptions.
+ *
+ * @see og_list_permissions()
+ */
+function og_fpp_list_permissions($type) {
+
+  $fpp_info = entity_get_info('fieldable_panels_pane');
+  $info = $fpp_info['bundles'][$type];
+  $perms = array();
+
+  // Check type is of group content.
+  if (og_is_group_content_type('fieldable_panels_pane', $type)) {
+    // Build standard list of permissions for this type.
+    $perms += array(
+      "create fieldable $type" => array(
+        'title' => t('Create %type_name', array('%type_name' => $info['label'])),
+      ),
+      "update fieldable $type" => array(
+        'title' => t('Edit %type_name', array('%type_name' => $info['label'])),
+      ),
+      "delete fieldable $type" => array(
+        'title' => t('Delete %type_name', array('%type_name' => $info['label'])),
+      ),
+    );
+
+    if (!module_exists('entityreference_prepopulate')) {
+      // We allow the create permission only on members, as otherwise we would
+      // have to iterate over every single group to decide if the user has
+      // permissions for it.
+      $perms["create fieldable $type"]['roles'] = array(OG_AUTHENTICATED_ROLE);
+    }
+
+    // Add default permissions.
+    foreach ($perms as $key => $value) {
+      $perms[$key]['default role'] = array(OG_AUTHENTICATED_ROLE);
+    }
+  }
+  return $perms;
+}
+
+/**
  * Alter a plugin after it has been processed.
  *
  * This hook is useful for overriding the final values for a plugin after it
@@ -26,6 +97,42 @@ function og_fpp_ctools_plugin_post_alter(&$plugin, &$info) {
 
   if (!empty($plugin['context']) && $plugin['context'] === 'ctools_context_create_entity') {
     $plugin['context'] = 'og_fpp_ctools_context_create_entity';
+  }
+}
+
+
+/**
+ * Implements hook_form_alter().
+ */
+function og_fpp_form_alter(&$form, &$form_state, $form_id) {
+  switch ($form_id) {
+    case 'fieldable_panels_panes_entity_edit_form':
+    case 'fieldable_panels_panes_fieldable_panels_pane_content_type_edit_form':
+
+      $entity = $form['#entity'];
+      // If we are editing an existing fpp entity, verify that this current user
+      // has organic group level access to update this entity.
+      if ($form_state['op'] == 'edit' && empty($entity->is_new)) {
+        // This permisson is provided by og_fpp_og_permission().
+        $perm = 'update fieldable ' . $entity->bundle;
+        $og_access = og_user_access_entity($perm, 'fieldable_panels_pane', $entity);
+
+        // If the user should not have access to edit this, then rebuild form
+        // with only a message and a 'cancel' button.
+        if (!$og_access) {
+          $deny_form = array();
+          $deny_form['message'] = array(
+            '#markup' => t('You do not have permission to edit this pane.'),
+          );
+          $deny_form['buttons'] = $form['buttons'];
+          unset($deny_form['buttons']['return']);
+          $deny_form['form_id'] = $form['form_id'];
+          $deny_form['form_token'] = $form['form_token'];
+          $deny_form['#type'] = $form['#type'];
+          $form = $deny_form;
+        }
+      }
+      break;
   }
 }
 
