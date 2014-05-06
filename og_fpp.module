@@ -29,7 +29,6 @@ function og_fpp_og_permission() {
   return $perms;
 }
 
-
 /**
  * Helper function to generate standard node permission list for a given type.
  *
@@ -99,7 +98,6 @@ function og_fpp_ctools_plugin_post_alter(&$plugin, &$info) {
     $plugin['context'] = 'og_fpp_ctools_context_create_entity';
   }
 }
-
 
 /**
  * Implements hook_form_alter().
@@ -216,6 +214,8 @@ function og_fpp_build_group_membership_restrictions($entity_type, $entity) {
       }
     }
   }
+
+  drupal_alter('og_fpp_membership_restrictions', $group_membership_restrictions, $entity, $entity_type);
 
   return $group_membership_restrictions;
 }
